@@ -38,7 +38,7 @@ var ObnoxiousThing = (() => {
         }
       ],
       version: '1.0.0',
-      description: 'Turns your messages into obnoxious things. Rehash of Metalloriff\'s The Clap Best Clap Plugin Clap Ever. Also the code structure is blatantly taken from Lighty, with permission. Check out their plugins!',
+      description: 'Turns your messages into obnoxious things. Rehash of Metalloriff\'s The Clap Best Clap Plugin Clap Ever. Also the code structure is blatantly taken from Lighty, with permission. Check out their plugins!\n\nTo use, type claps: before a message and send it to replace all spaces with 👏. Type ra: before a message and send it to replace all letters and numbers with regional indicators (huge emoji versions of letters). It\'s so awful.\n\nBest part is, you can combine them! Please don\'t use this unless you want people to hate you.',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/ObnoxiousThing.plugin.js'
     }
