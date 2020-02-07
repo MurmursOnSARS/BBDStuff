@@ -97,7 +97,7 @@ var ObnoxiousThing = (() => {
     };
     const substitutera = str => {
       const replacements = Object.keys(substitutionsra).reverse(); //reversed to make all letters finish before numbers
-      replacements.forEach(x => (str = str.replace(new RegExp(x, 'g'), substitutionsra[x])));
+      replacements.forEach(x => (str = str.replace(new RegExp(`${x}(?![^<]*>)`, 'gi'), substitutionsra[x]))); //prevents replacing guild emoji text by ignoring <> and inside
       return str;
     };
     const claps = str => substituteclaps(str);
