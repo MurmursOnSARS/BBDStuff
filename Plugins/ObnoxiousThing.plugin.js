@@ -1,4 +1,4 @@
-//META{"name":"ObnoxiousThing","source":"https://github.com/MurmursOnSARS/BBDStuff/Plugins/ObnoxiousThing.plugin.js/","website":"https://github.com/MurmursOnSARS"}*//
+//META{"name":"ObnoxiousThing","source":"https://github.com/MurmursOnSARS/BBDStuff/blob/master/Plugins/ObnoxiousThing.plugin.js/","website":"https://github.com/MurmursOnSARS"}*//
 /*@cc_on
 @if (@_jscript)
 
