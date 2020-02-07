@@ -40,7 +40,7 @@ var ObnoxiousThing = (() => {
       version: '1.0.0',
       description: 'Turns your messages into obnoxious things. Rehash of Metalloriff\'s The Clap Best Clap Plugin Clap Ever. Also the code structure is blatantly taken from Lighty, with permission. Check out their plugins!',
       github: 'https://github.com/MurmursOnSARS',
-      github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/Plugins/ObnoxiousThing.plugin.js'
+      github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/ObnoxiousThing.plugin.js'
     }
   };
 
