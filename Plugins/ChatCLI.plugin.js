@@ -51,6 +51,7 @@ var ChatCLI = (() => {
     const down_arrow = 40;
     var counter = 0;
     var channel = DiscordAPI.currentChannel ? DiscordAPI.currentChannel.discordObject.id : null;
+    // var channel = BdApi.findModuleByProps('getLastSelectedChannelId').__proto__.getChannelId();
     
     return class ChatCLI extends Plugin {
       
@@ -63,7 +64,7 @@ var ChatCLI = (() => {
 
       /* Listener */
       listen() {
-        document.addEventListener("keydown", event => this.editTextArea(event), true);
+        document.addEventListener("keydown", this.editTextArea, true);
       }
       
       editTextArea(event) {
@@ -76,6 +77,8 @@ var ChatCLI = (() => {
           counter = 0;
           channel = DiscordAPI.currentChannel.discordObject.id;
         }
+        // if(!channel) return;
+        // console.log(channel);
         if(event.keyCode === up_arrow) counter += 1;
         if(event.keyCode === down_arrow && counter !== 0) counter -= 1;
         // console.log(counter);
@@ -92,7 +95,7 @@ var ChatCLI = (() => {
       }
       
       unlisten() {
-        document.removeEventListener("keydown", event => this.editTextArea(event), true);
+        document.removeEventListener("keydown", this.editTextArea, true);
       }
       /* Listener */
 
