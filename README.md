@@ -16,3 +16,8 @@ Turns your messages into obnoxious things. Rehash of Metalloriff's The Clap Best
 To use, type `claps:` before a message and send it to replace all spaces with :clap:. Type `ra:` before a message and send it to replace all letters and numbers with regional indicators (huge emoji versions of letters). It's so awful.
 
 Best part is, you can combine them! Please don't use this unless you want people to hate you.
+
+
+# ChatCLI
+
+Use the up and down arrows to autofill the text area with previous message contents, akin to Bash and other command-line interfaces (CLIs).
