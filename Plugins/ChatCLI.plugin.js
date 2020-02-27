@@ -1,4 +1,4 @@
-//META{"name":"ChatCLI","source":"https://github.com/MurmursOnSARS/BBDStuff/blob/master/Plugins/ChatCLI.plugin.js/","website":"https://github.com/MurmursOnSARS"}*//
+//META{"name":"ChatCLI","source":"https://github.com/MurmursOnSARS/BBDStuff/blob/master/Plugins/ChatCLI.plugin.js/","website":"https://github.com/MurmursOnSARS","authorId":"660699868041314334"}*//
 /*@cc_on
 @if (@_jscript)
 
