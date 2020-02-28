@@ -51,7 +51,7 @@ var ChatCLI = (() => {
       {
         title: 'Oversight Committee',
         type: 'fixed',
-        items: ['No longer prevents scrolling in menus or in general chat, aka only works when the cursor is in the textbox. Message me if you don\'t like this change!']
+        items: ['No longer prevents scrolling in menus or in general chat, i.e. only works when the cursor is in the textbox. Message me if you don\'t like this change!']
       }
     ]
   };
