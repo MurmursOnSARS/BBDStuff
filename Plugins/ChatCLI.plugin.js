@@ -37,11 +37,23 @@ var ChatCLI = (() => {
           twitter_username: 'who_uses_twitter'
         }
       ],
-      version: '1.0.0',
+      version: '1.0.1',
       description: 'Use the up and down arrows to autofill the text area with previous message contents, akin to Bash and other command-line interfaces (CLIs).',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/ChatCLI.plugin.js'
-    }
+    },
+    changelog: [
+      {
+        title: 'First time using changelog!',
+        type: 'added',
+        items: ['Hopefully this all works.']
+      },
+      {
+        title: 'Oversight Committee',
+        type: 'fixed',
+        items: ['No longer prevents scrolling in menus or in general chat, aka only works when the cursor is in the textbox. Message me if you don\'t like this change!']
+      }
+    ]
   };
 
   /* Build */
@@ -69,6 +81,7 @@ var ChatCLI = (() => {
       
       editTextArea(event) {
         if(event.keyCode !== up_arrow && event.keyCode !== down_arrow) return;
+        if(!event.path || !event.path[1] || !event.path[1].hasClass("slateContainer-3Qkn2x")) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         // console.log(event);
