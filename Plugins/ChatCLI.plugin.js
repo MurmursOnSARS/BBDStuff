@@ -37,21 +37,46 @@ var ChatCLI = (() => {
           twitter_username: 'who_uses_twitter'
         }
       ],
-      version: '1.0.1',
+      version: '1.0.2',
       description: 'Use the up and down arrows to autofill the text area with previous message contents, akin to Bash and other command-line interfaces (CLIs).',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/ChatCLI.plugin.js'
     },
     changelog: [
       {
-        title: 'First time using changelog!',
+        title: 'Hello party people!!!',
         type: 'added',
-        items: ['Hopefully this all works.']
+        items: ['Spring break is coming!']
       },
       {
         title: 'Oversight Committee',
         type: 'fixed',
-        items: ['No longer prevents scrolling in menus or in general chat, i.e. only works when the cursor is in the textbox. Message me if you don\'t like this change!']
+        items: ['Relatively big fixes:\n\n\u2022  All emojis should now work\n\n\u2022  Empty messages (embeds, images, videos, etc.) are skipped\n\n\u2022  You have the right to CHOOSE!!! Check the plugin settings!']
+      }
+    ],
+    defaultConfig: [
+      {
+        type: 'radio',
+        id: 'selfOnly',
+        name: 'One Is The Loneliest Number',
+        value: 3,
+        options: [
+          {
+            name: 'Narcissistic',
+            value: 1,
+            desc: 'Show only your own messages, always.'
+          },
+          {
+            name: 'Semi-Narcissistic',
+            value: 2,
+            desc: 'Show only your own messages when holding shift.'
+          },
+          {
+            name: 'Echoistic',
+            value: 3,
+            desc: 'Show everyone\'s messages. Yes, I had to look at Greek mythos to figure this out.'
+          },
+        ]
       }
     ]
   };
@@ -63,9 +88,15 @@ var ChatCLI = (() => {
     const down_arrow = 40;
     var counter = 0;
     var channel = DiscordAPI.currentChannel ? DiscordAPI.currentChannel.discordObject.id : null;
+    var userid = DiscordAPI.currentUser.discordObject.id;
     // var channel = BdApi.findModuleByProps('getLastSelectedChannelId').__proto__.getChannelId();
     
     return class ChatCLI extends Plugin {
+      
+      constructor() {
+        super();
+        this.editTextArea = this.editTextArea.bind(this);
+      }
       
       onStart() {
         this.listen();
@@ -81,6 +112,7 @@ var ChatCLI = (() => {
       
       editTextArea(event) {
         if(event.keyCode !== up_arrow && event.keyCode !== down_arrow) return;
+        // console.log(event);
         if(!event.path || !event.path[1] || !event.path[1].hasClass("slateContainer-3Qkn2x")) return;
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -95,14 +127,22 @@ var ChatCLI = (() => {
         if(event.keyCode === up_arrow) counter += 1;
         if(event.keyCode === down_arrow && counter !== 0) counter -= 1;
         // console.log(counter);
-        var allmessages = document.querySelectorAll('.messages-3amgkR .message-2qnXI6 .markup-2BOw-j');
+        var allmessages = document.querySelectorAll('.message-2qnXI6');
+        // message-2qnXI6 da-message cozyMessage-3V1Y8y da-cozyMessage cozy-3raOZG da-cozy
+        // console.log(allmessages);
+        allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0]); // sometimes filters out garbage, maybe
+        allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content !== ""); // filters empty msgs
+        // console.log(allmessages);
+        if(this.settings.selfOnly === 1 || (this.settings.selfOnly === 2 && event.shiftKey === true)) {
+          allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.author.id === userid);
+        }
         // console.log(allmessages.length);
+        document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();
         if(allmessages.length < counter) return;
         var message = allmessages[allmessages.length-counter];
         // if(message.innerText === null) return; not useful here
         // console.log(message.innerText);
-        document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();
-        if(counter !== 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.insertText(message.innerText);
+        if(counter !== 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.insertText(message.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content);
         if(counter === 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();
         return false; 
       }
@@ -111,7 +151,11 @@ var ChatCLI = (() => {
         document.removeEventListener("keydown", this.editTextArea, true);
       }
       /* Listener */
-
+      
+      getSettingsPanel() {
+        return this.buildSettingsPanel().getElement();
+      }
+      
       get [Symbol.toStringTag]() {
         return 'Plugin';
       }
