@@ -37,7 +37,7 @@ var ChatCLI = (() => {
           twitter_username: 'who_uses_twitter'
         }
       ],
-      version: '1.0.2',
+      version: '1.1.0',
       description: 'Use the up and down arrows to autofill the text area with previous message contents, akin to Bash and other command-line interfaces (CLIs).',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/ChatCLI.plugin.js'
@@ -52,6 +52,11 @@ var ChatCLI = (() => {
         title: 'Oversight Committee',
         type: 'fixed',
         items: ['Relatively big fixes:\n\n\u2022  All emojis should now work\n\n\u2022  Empty messages (embeds, images, videos, etc.) are skipped\n\n\u2022  You have the right to CHOOSE!!! Check the plugin settings!']
+      },
+      {
+        title: 'Oops',
+        type: 'progress',
+        items: ['I\'m using the wrong colors for these but whatever. Version change should\'ve been larger last time so I\'m compensating. Also fixed-ish (ISH) quotes and removed some errors.']
       }
     ],
     defaultConfig: [
@@ -113,7 +118,8 @@ var ChatCLI = (() => {
       editTextArea(event) {
         if(event.keyCode !== up_arrow && event.keyCode !== down_arrow) return;
         // console.log(event);
-        if(!event.path || !event.path[1] || !event.path[1].hasClass("slateContainer-3Qkn2x")) return;
+        // console.log(event.path);
+        if(!event.path || !event.path[1] || event.path[1].nodeName !== 'DIV' || !event.path[1].hasClass("slateContainer-3Qkn2x")) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         // console.log(event);
@@ -131,19 +137,28 @@ var ChatCLI = (() => {
         // message-2qnXI6 da-message cozyMessage-3V1Y8y da-cozyMessage cozy-3raOZG da-cozy
         // console.log(allmessages);
         allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0]); // sometimes filters out garbage, maybe
-        allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content !== ""); // filters empty msgs
+        allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content !== "");  // filters empty msgs
         // console.log(allmessages);
         if(this.settings.selfOnly === 1 || (this.settings.selfOnly === 2 && event.shiftKey === true)) {
           allmessages = Object.values(allmessages).filter(yeet => yeet.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.author.id === userid);
         }
         // console.log(allmessages.length);
-        document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();
-        if(allmessages.length < counter) return;
-        var message = allmessages[allmessages.length-counter];
+        document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.moveAnchorToEndOfDocument(); // in case user moves anchor in editor, move anchor to end
+        document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();        // delete previous message or anything that was typed
+        if(allmessages.length < counter) return;                                // exits if the counter points to unloaded / nonexistant messages
         // if(message.innerText === null) return; not useful here
         // console.log(message.innerText);
-        if(counter !== 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.insertText(message.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content);
-        if(counter === 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();
+        if(counter !== 0) {                                                                                                 // if you're not below the newest message
+          var message = allmessages[allmessages.length-counter];                                                            // choose the message from all messages
+          var content = message.__reactInternalInstance$.memoizedProps.children[0].props.children[2].props.message.content; // find the content of the message
+          // console.log(content);
+          // console.log(content.length);
+          // console.log(content.slice(0,2));
+          if(content.length > 1 && content.slice(0,2) === '> ') content = content.slice(2);     // if msg is longer than 1 char and starts with a quote, remove quote. w/o, keeps quote on other msgs
+          // console.log(content);
+          document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.insertText(content); // insert the content into the editor
+        }
+        if(counter === 0) document.querySelector(".slateContainer-3Qkn2x").__reactInternalInstance$.return.stateNode.editorRef.deleteLineBackward();  // if below the newest message, clear editor
         return false; 
       }
       
