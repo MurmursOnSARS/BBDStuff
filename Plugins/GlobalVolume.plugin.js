@@ -45,7 +45,7 @@ var GlobalVolume = (() => {
         }
       ],
       version: '1.0.0',
-      description: 'Use custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused.',
+      description: 'Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused.',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/GlobalVolume.plugin.js'
     },
