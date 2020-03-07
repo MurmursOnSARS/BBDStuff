@@ -45,7 +45,7 @@ var GlobalVolume = (() => {
         }
       ],
       version: '1.0.0',
-      description: 'Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused.',
+      description: 'Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused. Remember, these are GLOBAL, which means if you set a keybind to \'d\' and now you can\'t spell \'discord\', blame yourself.',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/GlobalVolume.plugin.js'
     },
@@ -159,6 +159,7 @@ var GlobalVolume = (() => {
           if(stringReset !== '') stringReset += '+';
           stringReset += compatibility.codeToKey([1,el,system]);
         });
+        // console.log(stringUp,stringDown,stringReset);
         this.listen(stringUp,stringDown,stringReset);
       }
 
