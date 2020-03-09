@@ -16,7 +16,7 @@ Use the up and down arrows to autofill the text area with previous message conte
 
 # GlobalVolume
 
-Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn't focused. Remember, these are GLOBAL, which means if you set a keybind to 'd' and now you can't spell 'discord', blame yourself.
+Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn't focused. Windows users may have to run Discord in administrator mode for some applications.
 
 
 # ObnoxiousThing
