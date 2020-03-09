@@ -24,12 +24,7 @@
 @else@*/
 
 // to do:
-// 1--DONE--mutliple user ids in textbox (regex?)
-// 2--DONE--show error toast on invalid keybind
-// 3--DONE--include sliders in settings for max volume (0 to inf) and step size
-// 4--DONE--port keybind conversion to windows and linux using WebpackModules.getByProps('toCombo')
-// 5--------wait for fix from zere to get onUpdate keybinds (and others?) working. CURRENTLY: requires turning plugin off then on to update some settings
-
+// 1------Possibly figure out the transform from localVolume to real volume, might take 2 functions and fuzzing around 100
 var GlobalVolume = (() => {
   /* Setup */
   const config = {
@@ -44,8 +39,8 @@ var GlobalVolume = (() => {
           twitter_username: 'who_uses_twitter'
         }
       ],
-      version: '1.0.0',
-      description: 'Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused. Remember, these are GLOBAL, which means if you set a keybind to \'d\' and now you can\'t spell \'discord\', blame yourself.',
+      version: '1.1.0',
+      description: 'Map custom keybinds to control either the volume of specific users or everyone in the same voice channel as you, even when Discord isn\'t focused. Windows users may have to run Discord in administrator mode for some applications.',
       github: 'https://github.com/MurmursOnSARS',
       github_raw: 'https://raw.githubusercontent.com/MurmursOnSARS/BBDStuff/master/Plugins/GlobalVolume.plugin.js'
     },
@@ -54,6 +49,11 @@ var GlobalVolume = (() => {
         title: 'Hello party people!!!',
         type: 'added',
         items: ['Spring break is coming!']
+      },
+      {
+        title: 'Woah',
+        type: 'fixed',
+        items: ['_Markdown?_ Insane. Anyways, switched to a more global keybind system that also doesn\'t override other keybinds. Also no need to reload to save settings anymore!']
       }
     ],
     defaultConfig: [
@@ -127,9 +127,16 @@ var GlobalVolume = (() => {
     var voiceState = WebpackModules.getByProps('getVoiceState').__proto__;
     var setLV = WebpackModules.getByProps('setLocalVolume');
     var getLV = WebpackModules.getByProps('getLocalVolume').__proto__;
+    var event = WebpackModules.getByProps('inputEventRegister');
+    const huh = {
+      focused: true,
+      blurred: true,
+      keydown: true,
+      keyup: false
+    };
     var compatibility = WebpackModules.getByProps('toCombo');
     var system = compatibility.getEnv();  // Windows: 1, MacOS: 2, Linux: 3, Browser: 4 . if you get a 4 here, i'm honestly impressed
-    var electron = require("electron");
+    // var electron = require("electron");
     
     return class GlobalVolume extends Plugin {
       
@@ -142,33 +149,23 @@ var GlobalVolume = (() => {
       
       keyCheckAndConvert(bindUp,bindDown,bindReset) {
         if(!Array.isArray(bindUp) || !Array.isArray(bindDown) || !Array.isArray(bindReset)) {
-          return Toasts.show('Unsupported; how did you manage this?',{type:'error',timeout:5000});
+          return Toasts.show('Unsupported; how did you even manage this?',{type:'error',timeout:5000});
         }
-        var stringUp = '';
-        bindUp.forEach(el => {
-          if(stringUp !== '') stringUp += '+';
-          stringUp += compatibility.codeToKey([1,el,system]);
-        });
-        var stringDown = '';
-        bindDown.forEach(el => {
-          if(stringDown !== '') stringDown += '+';
-          stringDown += compatibility.codeToKey([1,el,system]);
-        });
-        var stringReset = '';
-        bindReset.forEach(el => {
-          if(stringReset !== '') stringReset += '+';
-          stringReset += compatibility.codeToKey([1,el,system]);
-        });
-        // console.log(stringUp,stringDown,stringReset);
-        this.listen(stringUp,stringDown,stringReset);
+        var arrayUp = [];
+        bindUp.forEach(x => arrayUp.push([0,x,system]));
+        var arrayDown = [];
+        bindDown.forEach(x => arrayDown.push([0,x,system]));
+        var arrayReset = [];
+        bindReset.forEach(x => arrayReset.push([0,x,system]));
+        // console.log(arrayUp,arrayDown,arrayReset);
+        this.listen(arrayUp,arrayDown,arrayReset);
       }
 
       /* Listener */
-      listen(stringUp,stringDown,stringReset) {
+      listen(arrayUp,arrayDown,arrayReset) {
         try {
           if(this.settings.allVC) {   // if true, ignore userids and finds all users if in VC. find funcs must be inside the register so that they update
-            electron.remote.globalShortcut.unregisterAll();
-            electron.remote.globalShortcut.register(stringUp, () => {
+            event.inputEventRegister(118, arrayUp, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;
               for (var user of Object.keys(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId])) {
                 if(this.settings.maxVol !== 0) {
@@ -178,23 +175,22 @@ var GlobalVolume = (() => {
                   setLV.setLocalVolume(user, getLV.getLocalVolume(user) + this.settings.stepSize);
                 }
               }
-            });
-            electron.remote.globalShortcut.register(stringDown, () => {
+            }, huh);
+            event.inputEventRegister(9998, arrayDown, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;
               for (var user of Object.keys(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId])) {
                 setLV.setLocalVolume(user, Math.max((getLV.getLocalVolume(user) - this.settings.stepSize), 0));
               }
-            });
-            electron.remote.globalShortcut.register(stringReset, () => {
+            }, huh);
+            event.inputEventRegister(8199, arrayReset, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;
               for (var user of Object.keys(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId])) {
                 setLV.setLocalVolume(user, this.settings.resetVol);
               }
-            });
+            }, huh);
           }
-          if(!this.settings.allVC) {    // if false, use userids to control specific users. Limited to current VC because otherwise, volume is changed for every user even outside VC
-            electron.remote.globalShortcut.unregisterAll();
-            electron.remote.globalShortcut.register(stringUp, () => {
+          if(!this.settings.allVC) {  // if false, use userids to control specific users. Limited to current VC because otherwise, volume is changed for every user even outside VC
+            event.inputEventRegister(118, arrayUp, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;    // not necessary, but better than alternative imo
               for (var user of this.settings.userids.split(/, */)) {
                 if(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId][user]) {
@@ -206,52 +202,49 @@ var GlobalVolume = (() => {
                   }
                 }
               }
-            });
-            electron.remote.globalShortcut.register(stringDown, () => {
+            }, huh);
+            event.inputEventRegister(9998, arrayDown, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;
               for (var user of this.settings.userids.split(/, */)) {
                 if(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId][user]) {
                   setLV.setLocalVolume(user, Math.max((getLV.getLocalVolume(user) - this.settings.stepSize), 0));
                 }
               }
-            });
-            electron.remote.globalShortcut.register(stringReset, () => {
+            }, huh);
+            event.inputEventRegister(8199, arrayReset, () => {
               if(!voiceLoc._voiceChannelGuildId || !voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId]) return;
               for (var user of this.settings.userids.split(/, */)) {
                 if(voiceState.getAllVoiceStates()[voiceLoc._voiceChannelGuildId][user]) {
                   setLV.setLocalVolume(user, this.settings.resetVol);
                 }
               }
-            });
+            }, huh);
           }
         }
         catch (e) {
-          electron.remote.globalShortcut.unregisterAll();
-          Toasts.show('Unsupported; keybinds cannot contain solely modifier keys (shift, alt, control, etc.)',{type:'error',timeout:5000});
+          event.inputEventUnregister(118);
+          event.inputEventUnregister(9998);
+          event.inputEventUnregister(8199);
+          Toasts.show('Unsupported; don\'t know how you messed this up lol)',{type:'error',timeout:5000});
         }
       }
       
       unlisten() {
-        electron.remote.globalShortcut.unregisterAll();
+        event.inputEventUnregister(118);
+        event.inputEventUnregister(9998);
+        event.inputEventUnregister(8199);
       }
       /* Listener */
       
       getSettingsPanel() {
         const panel = this.buildSettingsPanel();
-        /*
-        panel.append(this.buildSetting({
-          type: 'keybind',
-          id: 'volumeDown',
-          value: [69],
-          name: 'Decrease Volume Keybind',
-          onChange: value => {
-            this.settings['volumeDown'] = value;
-            console.log(this.settings['volumeDown']);
-            console.log(this.settings.volumeDown);
-            console.log(value);
+        
+        panel.addListener((id) => {
+          if(id == 'allVC' || id == 'volumeUp' || id == 'volumeDown' || id == 'volumeReset') {
+            this.keyCheckAndConvert(this.settings.volumeUp,this.settings.volumeDown,this.settings.volumeReset);
           }
-        }));
-        */
+        });
+        
         return panel.getElement();
       }
       
