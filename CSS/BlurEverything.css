@@ -1,0 +1,15 @@
+/* blurs all images and videos unless hovered over. once clicked to open/play, unblurs */
+.imageWrapper-2p5ogY img:hover, .imageWrapper-2p5ogY video:hover {
+    filter: none;
+    transition: 0.5s ease-in-out;
+}
+.imageWrapper-2p5ogY img:not(:hover), .imageWrapper-2p5ogY video:not(:hover) {
+    filter: blur(10px);
+    transition: 0.5s ease-in-out;
+}
+.inner-1ilYF7 .imageWrapper-2p5ogY img:not(:hover),
+.inner-1ilYF7 .imageWrapper-2p5ogY video:not(:hover),
+.imageWrapper-2p5ogY .wrapperControlsHidden-35Gtol video,
+.imageWrapper-2p5ogY .wrapperPlaying-1pXOW5 video {
+    filter: none;
+}
