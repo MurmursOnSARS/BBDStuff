@@ -1,3 +1,28 @@
+/* square server images */
+.svg-1X37T1 > foreignObject {
+    mask: none;
+}
+
+
+/* square user avatars */
+
+/* chats, member sidebar, My Account, user modals, user profiles, DM list */
+.mask-1l8v16 > foreignObject {
+    mask: none;
+}
+/* search results and pinned messages */
 .avatar-1BDn8e {
-    border-radius: 0%;
+    border-radius: 0;
+}
+/* voice chat */
+.avatar-3elDyV {
+    border-radius: 0;
+}
+/* embed authors */
+.embedAuthorIcon--1zR3L {
+    border-radius: 0;
+}
+/* search options */
+.popouts-2bnG9Z .option-96V44q.user-O3Czj0 > img {
+    border-radius: 0;
 }
