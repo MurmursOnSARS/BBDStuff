@@ -1,0 +1,10 @@
+/* just an example of what I use */
+.listItem-2P_4kh:first-of-type .childWrapper-anI2G9 {
+    background-image: url('https://media1.giphy.com/media/m0xidga92FClq/source.gif');
+    transform: rotate(180deg);
+    background-size: cover;
+    border-radius: 10px;
+}
+.homeIcon-tEMBK1 {
+    transform: rotate(180deg);
+}
